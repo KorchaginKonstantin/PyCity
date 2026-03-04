@@ -26,7 +26,7 @@ class Player1(pygame.sprite.Sprite): # Игрок
         self.speedy = 0
         keystate = pygame.key.get_pressed()
 
-        if keystate[pygame.K_RIGHT]:
+        if keystate[pygame.K_RIGHT]: # Направления Движения
             self.speedx = 5
             self.direction = 'right'
         elif keystate[pygame.K_LEFT]:
@@ -54,10 +54,8 @@ class Bullet(pygame.sprite.Sprite): # Пуля
         self.image.fill(BLUE)
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
-        
-        # Направления Стрельбы
 
-        if player1.direction == 'up': 
+        if player1.direction == 'up': # Направления Стрельбы
             self.speedy = -10
             self.speedx = 0
         elif player1.direction == 'down':
@@ -74,8 +72,9 @@ class Bullet(pygame.sprite.Sprite): # Пуля
         self.rect.x += self.speedx
         self.rect.y += self.speedy
 
-        if self.rect.bottom < 0:
+        if self.rect.bottom < 0 or self.rect.bottomleft < (0, 0) or self.rect.bottomleft > (720, 720) or self.rect.bottom > 720:
             self.kill()
+
         if self.rect.colliderect(wall.rect):
             wall.kill()
             self.kill()
