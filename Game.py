@@ -1,4 +1,5 @@
-import pygame
+from pygame import Surface, constants, display, event, init, key, mixer, time, quit
+from pygame.sprite import Group, Sprite
 
 # Быстрые Данные
 
@@ -13,10 +14,10 @@ GREEN = (0, 255, 0)
 # Спрайты
 
 
-class Player1(pygame.sprite.Sprite):  # Игрок
+class Player1(Sprite):  # Игрок
     def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.Surface((20, 20))
+        Sprite.__init__(self)
+        self.image = Surface((20, 20))
         self.image.fill(RED)
         self.rect = self.image.get_rect()
         self.rect.center = (WIDTH / 2, HEIGHT / 2)
@@ -25,18 +26,18 @@ class Player1(pygame.sprite.Sprite):  # Игрок
     def update(self):
         self.speedx = 0
         self.speedy = 0
-        key_state = pygame.key.get_pressed()
+        key_state = key.get_pressed()
 
-        if key_state[pygame.constants.K_RIGHT]:  # Направления Движения
+        if key_state[constants.K_RIGHT]:  # Направления Движения
             self.speedx = 5
             self.direction = 'right'
-        elif key_state[pygame.constants.K_LEFT]:
+        elif key_state[constants.K_LEFT]:
             self.speedx = -5
             self.direction = "left"
-        elif key_state[pygame.constants.K_UP]:
+        elif key_state[constants.K_UP]:
             self.speedy = -5
             self.direction = "up"
-        elif key_state[pygame.constants.K_DOWN]:
+        elif key_state[constants.K_DOWN]:
             self.speedy = 5
             self.direction = "down"
 
@@ -48,10 +49,10 @@ class Player1(pygame.sprite.Sprite):  # Игрок
         all_sprites.add(bullet)
         bullets.add(bullet)
 
-class Bullet(pygame.sprite.Sprite): # Пуля
+class Bullet(Sprite): # Пуля
     def __init__(self, x: float, y: float):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.Surface((10, 10))
+        Sprite.__init__(self)
+        self.image = Surface((10, 10))
         self.image.fill(BLUE)
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
@@ -80,24 +81,24 @@ class Bullet(pygame.sprite.Sprite): # Пуля
             wall.kill()
             self.kill()
 
-class Wall(pygame.sprite.Sprite): # Стена
+class Wall(Sprite): # Стена
     def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.Surface((10, 10))
+        Sprite.__init__(self)
+        self.image = Surface((10, 10))
         self.image.fill(GREEN)
         self.rect = self.image.get_rect()
         self.rect.center = (5, 5)
 
 # Данные Игры
 
-pygame.init()
-pygame.mixer.init()
-screen = pygame.display.set_mode((WIDTH,HEIGHT))
-clock = pygame.time.Clock()
+init()
+mixer.init()
+screen = display.set_mode((WIDTH, HEIGHT))
+clock = time.Clock()
 
-all_sprites: pygame.sprite.Group[Player1 | Bullet | Wall] = pygame.sprite.Group()
-bullets: pygame.sprite.Group[Bullet] = pygame.sprite.Group()
-walls: pygame.sprite.Group[Wall] = pygame.sprite.Group()
+all_sprites: Group[Player1 | Bullet | Wall] = Group()
+bullets: Group[Bullet] = Group()
+walls: Group[Wall] = Group()
 
 player1 = Player1()
 wall = Wall()
@@ -109,17 +110,17 @@ running = True
 while running:
     clock.tick(FPS)
 
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
+    for e in event.get():
+        if e.type == constants.QUIT:
             running = False
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE:
+        elif e.type == constants.KEYDOWN:
+            if e.key == constants.K_SPACE:
                 player1.shoot()
 
     # print(player1.direction, bullets)
     all_sprites.update()
     screen.fill(BLACK)
     all_sprites.draw(screen)
-    pygame.display.flip()
+    display.flip()
 
-pygame.quit()
+quit()
