@@ -19,6 +19,7 @@ class Player1(pygame.sprite.Sprite): # Игрок
         self.image.fill(RED)
         self.rect = self.image.get_rect()
         self.rect.center = (WIDTH / 2, HEIGHT / 2)
+        self.direction = 'up'
 
     def update(self):
         self.speedx = 0
@@ -27,12 +28,16 @@ class Player1(pygame.sprite.Sprite): # Игрок
 
         if keystate[pygame.K_RIGHT]:
             self.speedx = 5
+            self.direction = 'right'
         elif keystate[pygame.K_LEFT]:
             self.speedx = -5
+            self.direction = "left"
         elif keystate[pygame.K_UP]:
             self.speedy = -5
+            self.direction = "up"
         elif keystate[pygame.K_DOWN]:
             self.speedy = 5
+            self.direction = "down"
         
         self.rect.x += self.speedx
         self.rect.y += self.speedy
@@ -49,9 +54,24 @@ class Bullet(pygame.sprite.Sprite): # Пуля
         self.image.fill(BLUE)
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
-        self.speedy = -10
+        
+        # Направления Стрельбы
+
+        if player1.direction == 'up': 
+            self.speedy = -10
+            self.speedx = 0
+        elif player1.direction == 'down':
+            self.speedy = 10
+            self.speedx = 0
+        elif player1.direction == 'right':
+            self.speedx = 10
+            self.speedy = 0
+        elif player1.direction == 'left':
+            self.speedx = -10
+            self.speedy = 0
         
     def update(self):
+        self.rect.x += self.speedx
         self.rect.y += self.speedy
 
         if self.rect.bottom < 0:
@@ -96,12 +116,10 @@ while running:
             if event.key == pygame.K_SPACE:
                 player1.shoot()
 
-    # print(player1.rect.center, bullets)
+    print(player1.direction, bullets)
     all_sprites.update()
     screen.fill(BLACK)
     all_sprites.draw(screen)
     pygame.display.flip()
 
 pygame.quit()
-
-# АБОБА
