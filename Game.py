@@ -114,6 +114,8 @@ while running:
         if e.type == constants.QUIT:
             running = False
         elif e.type == constants.KEYDOWN:
+            if e.key == constants.K_q and e.mod & constants.KMOD_CTRL:
+                running = False
             if e.key == constants.K_SPACE:
                 player1.shoot()
 
