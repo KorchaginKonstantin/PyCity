@@ -8,8 +8,8 @@ HEIGHT = 720
 FPS = 30
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
-BLUE = (0, 0, 255)
 GREEN = (0, 255, 0)
+BLUE = (0, 0, 255)
 
 # Спрайты
 
@@ -77,17 +77,20 @@ class Bullet(Sprite): # Пуля
         if self.rect.bottom < 0 or self.rect.bottomleft < (0, 0) or self.rect.bottomleft > (720, 720) or self.rect.bottom > 720:
             self.kill()
 
-        if self.rect.colliderect(wall.rect):
-            wall.kill()
-            self.kill()
+        for wall in walls:
+            if self.rect.colliderect(wall.rect):
+                self.kill()
+                wall.kill()
+                break
 
 class Wall(Sprite): # Стена
-    def __init__(self):
+    def __init__(self, x: float, y: float):
         Sprite.__init__(self)
         self.image = Surface((10, 10))
         self.image.fill(GREEN)
         self.rect = self.image.get_rect()
-        self.rect.center = (5, 5)
+        self.rect.center = (10*x - 5, 10*y - 5)
+
 
 # Данные Игры
 
@@ -101,8 +104,22 @@ bullets: Group[Bullet] = Group()
 walls: Group[Wall] = Group()
 
 player1 = Player1()
-wall = Wall()
-all_sprites.add(player1, wall)
+all_sprites.add(player1)
+
+# Загрузка Уровня
+
+lines = []
+with open('map.txt') as inputfile:
+    for line in inputfile:
+        lines.append(line.strip())
+
+for y in range(len(lines)):
+    for x, j in enumerate(lines[y]):
+        print(x, j)
+        if j == '1':
+            wall = Wall(x+1, y+1)
+            walls.add(wall)
+            all_sprites.add(wall)
 
 # Игра
 
@@ -111,6 +128,7 @@ while running:
     clock.tick(FPS)
 
     for e in event.get():
+        # print(e)
         if e.type == constants.QUIT:
             running = False
         elif e.type == constants.KEYDOWN:
