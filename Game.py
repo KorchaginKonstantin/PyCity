@@ -33,13 +33,23 @@ class Player1(Sprite):  # Игрок
             self.direction = 'right'
         elif key_state[constants.K_LEFT]:
             self.speedx = -5
-            self.direction = "left"
+            self.direction = 'left'
         elif key_state[constants.K_UP]:
             self.speedy = -5
-            self.direction = "up"
+            self.direction = 'up'
         elif key_state[constants.K_DOWN]:
             self.speedy = 5
-            self.direction = "down"
+            self.direction = 'down'
+
+        for wall in walls: # Коллизия с Стенами
+            if self.rect.top == wall.rect.bottom and wall.rect.x - 20 < self.rect.x < wall.rect.x + 10 and self.direction == 'up':
+                self.speedy = 0
+            if self.rect.left == wall.rect.right and wall.rect.y - 20 < self.rect.y < wall.rect.y + 10 and self.direction == 'left':
+                self.speedx = 0
+            if self.rect.bottom == wall.rect.top and wall.rect.x - 20 < self.rect.x < wall.rect.x + 10 and self.direction == 'down':
+                self.speedy = 0
+            if self.rect.right == wall.rect.left and wall.rect.y - 20 < self.rect.y < wall.rect.y + 10 and self.direction == 'r':
+                self.speedx = 0
 
         self.rect.x += self.speedx
         self.rect.y += self.speedy
@@ -49,7 +59,7 @@ class Player1(Sprite):  # Игрок
         all_sprites.add(bullet)
         bullets.add(bullet)
 
-class Bullet(Sprite): # Пуля
+class Bullet(Sprite):  # Пуля
     def __init__(self, x: float, y: float):
         Sprite.__init__(self)
         self.image = Surface((10, 10))
@@ -57,7 +67,7 @@ class Bullet(Sprite): # Пуля
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
 
-        if player1.direction == 'up': # Направления Стрельбы
+        if player1.direction == 'up':  # Направления Стрельбы
             self.speedy = -10
             self.speedx = 0
         elif player1.direction == 'down':
@@ -74,22 +84,22 @@ class Bullet(Sprite): # Пуля
         self.rect.x += self.speedx
         self.rect.y += self.speedy
 
-        if self.rect.bottom < 0 or self.rect.bottomleft < (0, 0) or self.rect.bottomleft > (720, 720) or self.rect.bottom > 720:
+        if self.rect.bottom < 0 or self.rect.bottomleft < (0, 0) or self.rect.bottomleft > (720, 720) or self.rect.bottom > 720:  # Уничтожение за Краями
             self.kill()
 
-        for wall in walls:
+        for wall in walls:  # Уничтожение Стены
             if self.rect.colliderect(wall.rect):
                 self.kill()
                 wall.kill()
                 break
 
-class Wall(Sprite): # Стена
+class Wall(Sprite):  # Стена
     def __init__(self, x: float, y: float):
         Sprite.__init__(self)
         self.image = Surface((10, 10))
         self.image.fill(GREEN)
         self.rect = self.image.get_rect()
-        self.rect.center = (10*x - 5, 10*y - 5)
+        self.rect.center = (10*x-5, 10*y-5)
 
 
 # Данные Игры
@@ -108,14 +118,13 @@ all_sprites.add(player1)
 
 # Загрузка Уровня
 
-lines = []
-with open('map.txt') as inputfile:
-    for line in inputfile:
-        lines.append(line.strip())
+level = []
+with open('map.txt') as file:
+    for line in file:
+        level.append(line.strip())
 
-for y in range(len(lines)):
-    for x, j in enumerate(lines[y]):
-        print(x, j)
+for y in range(len(level)):
+    for x, j in enumerate(level[y]):
         if j == '1':
             wall = Wall(x+1, y+1)
             walls.add(wall)
@@ -126,6 +135,7 @@ for y in range(len(lines)):
 running = True
 while running:
     clock.tick(FPS)
+    print(f'{player1.rect.y, wall.rect.y}')
 
     for e in event.get():
         # print(e)
