@@ -41,14 +41,15 @@ class Player1(Sprite):  # Игрок
             self.speedy = 5
             self.direction = 'down'
 
-        for wall in walls: # Коллизия с Стенами
-            if self.rect.top == wall.rect.bottom and wall.rect.x - 20 < self.rect.x < wall.rect.x + 10 and self.direction == 'up':
+        for wall in walls:  # Коллизия c Препядствиями
+            if (self.rect.top == 0 and self.direction == 'up') or (self.rect.bottom == HEIGHT and self.direction == 'down'):  # Коллизия с Границами
                 self.speedy = 0
-            if self.rect.left == wall.rect.right and wall.rect.y - 20 < self.rect.y < wall.rect.y + 10 and self.direction == 'left':
+            if (self.rect.left == 0 and self.direction == 'left') or (self.rect.right == WIDTH and self.direction == 'right'):
                 self.speedx = 0
-            if self.rect.bottom == wall.rect.top and wall.rect.x - 20 < self.rect.x < wall.rect.x + 10 and self.direction == 'down':
+
+            if (self.rect.top == wall.rect.bottom and wall.rect.x - 20 < self.rect.x < wall.rect.x + 10 and self.direction == 'up') or (self.rect.bottom == wall.rect.top and wall.rect.x - 20 < self.rect.x < wall.rect.x + 10 and self.direction == 'down'):  # Коллизия с Стенами
                 self.speedy = 0
-            if self.rect.right == wall.rect.left and wall.rect.y - 20 < self.rect.y < wall.rect.y + 10 and self.direction == 'r':
+            if (self.rect.left == wall.rect.right and wall.rect.y - 20 < self.rect.y < wall.rect.y + 10 and self.direction == 'left') or (self.rect.right == wall.rect.left and wall.rect.y - 20 < self.rect.y < wall.rect.y + 10 and self.direction == 'right'):
                 self.speedx = 0
 
         self.rect.x += self.speedx
@@ -135,10 +136,9 @@ for y in range(len(level)):
 running = True
 while running:
     clock.tick(FPS)
-    print(f'{player1.rect.y, wall.rect.y}')
+    # print(f'{player1.rect.y, wall.rect.y}')
 
     for e in event.get():
-        # print(e)
         if e.type == constants.QUIT:
             running = False
         elif e.type == constants.KEYDOWN:
@@ -147,7 +147,7 @@ while running:
             if e.key == constants.K_SPACE:
                 player1.shoot()
 
-    # print(player1.direction, bullets)
+    # print(time.get_ticks())
     all_sprites.update()
     screen.fill(BLACK)
     all_sprites.draw(screen)
