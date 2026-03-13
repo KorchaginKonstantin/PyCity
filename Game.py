@@ -134,9 +134,9 @@ for y in range(len(level)):
 # Игра
 
 running = True
+cooldown = time.get_ticks()  # <- Перезарядка до разницы с общим временем (первый выстрел без задержки)
 while running:
     clock.tick(FPS)
-    # print(f'{player1.rect.y, wall.rect.y}')
 
     for e in event.get():
         if e.type == constants.QUIT:
@@ -144,10 +144,10 @@ while running:
         elif e.type == constants.KEYDOWN:
             if e.key == constants.K_q and e.mod & constants.KMOD_CTRL:
                 running = False
-            if e.key == constants.K_SPACE:
+            if e.key == constants.K_SPACE and time.get_ticks() >= cooldown:
+                cooldown = time.get_ticks()+500*2  # <- Перезарядка с РАЗНИЦОЙ с общим временем
                 player1.shoot()
 
-    # print(time.get_ticks())
     all_sprites.update()
     screen.fill(BLACK)
     all_sprites.draw(screen)
