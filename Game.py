@@ -28,7 +28,7 @@ class Player1(Sprite):  # Игрок
         self.speedy = 0
         key_state = key.get_pressed()
 
-        if key_state[constants.K_RIGHT]:  # Направления Движения
+        if key_state[constants.K_RIGHT]:  # <- Направления Движения
             self.speedx = 5
             self.direction = 'right'
         elif key_state[constants.K_LEFT]:
@@ -41,13 +41,13 @@ class Player1(Sprite):  # Игрок
             self.speedy = 5
             self.direction = 'down'
 
-        for wall in walls:  # Коллизия c Препядствиями
-            if (self.rect.top == 0 and self.direction == 'up') or (self.rect.bottom == HEIGHT and self.direction == 'down'):  # Коллизия с Границами
+        for wall in walls:  # <- Коллизия c Препядствиями
+            if (self.rect.top == 0 and self.direction == 'up') or (self.rect.bottom == HEIGHT and self.direction == 'down'):  # <- Коллизия с Границами
                 self.speedy = 0
             if (self.rect.left == 0 and self.direction == 'left') or (self.rect.right == WIDTH and self.direction == 'right'):
-                self.speedx = 0
+                self.speedx = 0 
 
-            if (self.rect.top == wall.rect.bottom and wall.rect.x - 20 < self.rect.x < wall.rect.x + 10 and self.direction == 'up') or (self.rect.bottom == wall.rect.top and wall.rect.x - 20 < self.rect.x < wall.rect.x + 10 and self.direction == 'down'):  # Коллизия с Стенами
+            if (self.rect.top == wall.rect.bottom and wall.rect.x - 20 < self.rect.x < wall.rect.x + 10 and self.direction == 'up') or (self.rect.bottom == wall.rect.top and wall.rect.x - 20 < self.rect.x < wall.rect.x + 10 and self.direction == 'down'):  # <- Коллизия с Стенами
                 self.speedy = 0
             if (self.rect.left == wall.rect.right and wall.rect.y - 20 < self.rect.y < wall.rect.y + 10 and self.direction == 'left') or (self.rect.right == wall.rect.left and wall.rect.y - 20 < self.rect.y < wall.rect.y + 10 and self.direction == 'right'):
                 self.speedx = 0
@@ -68,7 +68,7 @@ class Bullet(Sprite):  # Пуля
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
 
-        if player1.direction == 'up':  # Направления Стрельбы
+        if player1.direction == 'up':  # <- Направления Стрельбы
             self.speedy = -10
             self.speedx = 0
         elif player1.direction == 'down':
@@ -85,10 +85,10 @@ class Bullet(Sprite):  # Пуля
         self.rect.x += self.speedx
         self.rect.y += self.speedy
 
-        if self.rect.bottom < 0 or self.rect.bottomleft < (0, 0) or self.rect.bottomleft > (720, 720) or self.rect.bottom > 720:  # Уничтожение за Краями
+        if self.rect.bottom < 0 or self.rect.bottomleft < (0, 0) or self.rect.bottomleft > (720, 720) or self.rect.bottom > 720:  # <- Уничтожение за Краями
             self.kill()
 
-        for wall in walls:  # Уничтожение Стены
+        for wall in walls:  # <- Уничтожение Стены
             if self.rect.colliderect(wall.rect):
                 self.kill()
                 wall.kill()
@@ -133,6 +133,7 @@ for y in range(len(level)):
 
 # Игра
 
+timer = 240*1000
 running = True
 cooldown = time.get_ticks()  # <- Перезарядка до разницы с общим временем (первый выстрел без задержки)
 while running:
@@ -145,11 +146,13 @@ while running:
             if e.key == constants.K_q and e.mod & constants.KMOD_CTRL:
                 running = False
             if e.key == constants.K_SPACE and time.get_ticks() >= cooldown:
-                cooldown = time.get_ticks()+500*2  # <- Перезарядка с РАЗНИЦОЙ с общим временем
+                cooldown = time.get_ticks()+500  # <- Перезарядка с РАЗНИЦОЙ с общим временем
                 player1.shoot()
 
     all_sprites.update()
     screen.fill(BLACK)
+    display.set_caption(f'{timer//1000}')
+    timer -= 1000//FPS
     all_sprites.draw(screen)
     display.flip()
 
