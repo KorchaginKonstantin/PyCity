@@ -1,5 +1,6 @@
 from pygame import Surface, constants, display, event, init, key, mixer, time, quit
 from pygame.sprite import Group, Sprite
+from WorldGen import generate_hor, generate_ver
 
 # Быстрые Данные
 
@@ -119,6 +120,9 @@ all_sprites.add(player1)
 
 # Загрузка Уровня
 
+generate_ver()
+generate_hor(per = 10)
+
 level = []
 with open('map.txt') as file:
     for line in file:
@@ -132,7 +136,6 @@ for y in range(len(level)):
             all_sprites.add(wall)
 
 # Игра
-
 timer = 240*1000
 running = True
 cooldown = time.get_ticks()  # <- Перезарядка до разницы с общим временем (первый выстрел без задержки)
