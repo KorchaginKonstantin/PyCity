@@ -1,6 +1,6 @@
 from pygame import Surface, constants, display, event, init, key, mixer, time, quit
 from pygame.sprite import Group, Sprite
-from WorldGen import generate_hor, generate_ver
+from WorldGen import generate_hor, generate_ver, ungenerate
 
 # Быстрые Данные
 
@@ -120,7 +120,7 @@ all_sprites.add(player1)
 
 # Загрузка Уровня
 
-generate_ver()
+generate_ver(per = 4)
 generate_hor(per = 10)
 
 level = []
@@ -144,9 +144,11 @@ while running:
 
     for e in event.get():
         if e.type == constants.QUIT:
+            ungenerate()
             running = False
         elif e.type == constants.KEYDOWN:
             if e.key == constants.K_q and e.mod & constants.KMOD_CTRL:
+                ungenerate()
                 running = False
             if e.key == constants.K_SPACE and time.get_ticks() >= cooldown:
                 cooldown = time.get_ticks()+500  # <- Перезарядка с РАЗНИЦОЙ с общим временем
