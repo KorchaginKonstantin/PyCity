@@ -1,12 +1,15 @@
 from random import randint
 
+# Длина карты (Для вертикальной генерации)
 
 with open('map.txt') as file_count:
     for line in file_count:
         num = len(line.strip())
 
+# Функции
 
-def generate_hor(per):
+
+def generate_hor(per):  # Генерация Горизонтального Большого Прохода
     file_list = []
 
     with open('map.txt', 'r+') as file:
@@ -27,7 +30,7 @@ def generate_hor(per):
             file.seek(num_seek_hor - (len(file_list[0])*i + i))
             file.write(''.join(file_list[0]))
 
-def generate_ver(per):
+def generate_ver(per, iter):  # Генерация Вертикального Большого Прохода
     with open('map.txt', 'r+') as file:
         file_list = []
         num_seek_ver = randint(per, num - 1)
@@ -51,7 +54,7 @@ def generate_ver(per):
             file.seek((len(file_list[0]) + 1) * count_for)
             file.write(''.join(file_list[count_for]))
 
-def ungenerate():
+def ungenerate():  # Дегенерация Уровня ( ͡° ͜ʖ ͡°)
     with open('map.txt', 'r+') as file:
         file_list = []
 
