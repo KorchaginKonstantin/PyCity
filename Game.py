@@ -45,12 +45,16 @@ class Player1(Sprite):  # Игрок
         for wall in walls:  # <- Коллизия c Препядствиями
             if (self.rect.top == 0 and self.direction == 'up') or (self.rect.bottom == HEIGHT and self.direction == 'down'):  # <- Коллизия с Границами
                 self.speedy = 0
-            if (self.rect.left == 0 and self.direction == 'left') or (self.rect.right == WIDTH and self.direction == 'right'):
+            elif (self.rect.left == 0 and self.direction == 'left') or (self.rect.right == WIDTH and self.direction == 'right'):
                 self.speedx = 0 
 
-            if (self.rect.top == wall.rect.bottom and wall.rect.x - 20 < self.rect.x < wall.rect.x + 10 and self.direction == 'up') or (self.rect.bottom == wall.rect.top and wall.rect.x - 20 < self.rect.x < wall.rect.x + 10 and self.direction == 'down'):  # <- Коллизия с Стенами
+            if (self.rect.top == wall.rect.bottom and wall.rect.x - 20 < self.rect.x < wall.rect.x + 10 and self.direction == 'up'):  # <- Коллизия с Стенами
                 self.speedy = 0
-            if (self.rect.left == wall.rect.right and wall.rect.y - 20 < self.rect.y < wall.rect.y + 10 and self.direction == 'left') or (self.rect.right == wall.rect.left and wall.rect.y - 20 < self.rect.y < wall.rect.y + 10 and self.direction == 'right'):
+            elif (self.rect.bottom == wall.rect.top and wall.rect.x - 20 < self.rect.x < wall.rect.x + 10 and self.direction == 'down'):
+                self.speedy = 0
+            elif (self.rect.left == wall.rect.right and wall.rect.y - 20 < self.rect.y < wall.rect.y + 10 and self.direction == 'left'):
+                self.speedx = 0
+            elif (self.rect.right == wall.rect.left and wall.rect.y - 20 < self.rect.y < wall.rect.y + 10 and self.direction == 'right'):
                 self.speedx = 0
 
         self.rect.x += self.speedx
@@ -120,7 +124,8 @@ all_sprites.add(player1)
 
 # Загрузка Уровня
 
-generate_ver(per = 15, iter = 2)
+generate_ver(per = 7)
+generate_hor(per = 7)
 
 level = []
 with open('map.txt') as file:
@@ -136,7 +141,7 @@ for y in range(len(level)):
 
 # Игра
 
-timer = 240 * 1000
+timer = 240*1000
 running = True
 cooldown = time.get_ticks()  # <- Перезарядка до разницы с общим временем (первый выстрел без задержки)
 while running:

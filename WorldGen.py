@@ -9,7 +9,7 @@ with open('map.txt') as file_count:
 # Функции
 
 
-def generate_hor(per):  # Генерация Горизонтального Большого Прохода
+def generate_hor(per):  # Генерация Горизонтального Прохода
     file_list = []
 
     with open('map.txt', 'r+') as file:
@@ -30,7 +30,7 @@ def generate_hor(per):  # Генерация Горизонтального Бо
             file.seek(num_seek_hor - (len(file_list[0])*i + i))
             file.write(''.join(file_list[0]))
 
-def generate_ver(per, iter):  # Генерация Вертикального Большого Прохода
+def generate_ver(per):  # Генерация Вертикального Прохода
     with open('map.txt', 'r+') as file:
         file_list = []
         num_seek_ver = randint(per, num - 1)
