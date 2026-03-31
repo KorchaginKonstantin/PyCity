@@ -134,27 +134,33 @@ with open('map.txt') as file:
 
 for y in range(len(level)):
     for x, j in enumerate(level[y]):
-        if j == '1':
-            wall = Wall(x+1, y+1)
-            walls.add(wall)
-            all_sprites.add(wall)
-        elif j == '2':
+        if j == '1' or j == '2':
             wall = Wall(x+1, y+1)
             walls.add(wall)
             all_sprites.add(wall)
 
 # Игра
 
-timer = 240*1000
+countdown = 5
+countdown_timer = event.custom_type()
+
+time.set_timer(countdown_timer, 1000)
 running = True
 cooldown = time.get_ticks()  # <- Перезарядка до разницы с общим временем (первый выстрел без задержки)
 while running:
     clock.tick(FPS)
 
+    if countdown == 0:
+        ungenerate()
+        running = False
+
     for e in event.get():
         if e.type == constants.QUIT:
             ungenerate()
             running = False
+        if e.type == countdown_timer:
+            countdown -= 1
+
         elif e.type == constants.KEYDOWN:
             if e.key == constants.K_q and e.mod & constants.KMOD_CTRL:
                 ungenerate()
@@ -163,10 +169,9 @@ while running:
                 cooldown = time.get_ticks() + 500  # <- Перезарядка с РАЗНИЦОЙ с общим временем
                 player1.shoot()
 
+    display.set_caption(f'{countdown}')
     all_sprites.update()
     screen.fill(BLACK)
-    display.set_caption(f'{timer//1000}')
-    timer -= 1000//FPS
     all_sprites.draw(screen)
     display.flip()
 

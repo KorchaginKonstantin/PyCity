@@ -8,7 +8,6 @@ with open('map.txt') as file_count:
 
 # Функции
 
-print(num)
 
 def generate_hor(per):  # Генерация Горизонтального Прохода
     file_list = []
@@ -27,7 +26,7 @@ def generate_hor(per):  # Генерация Горизонтального Пр
 
             file_list.append(line_list)
 
-        num_seek_hor = randint(per, len(file_list) - 1) * (len(file_list[0]) + 1)
+        num_seek_hor = randint(per - 1, len(file_list) - 1) * (len(file_list[0]) + 1)
 
         for i in range(per):
             file.seek(num_seek_hor - ((len(file_list[0])*i) + i))
