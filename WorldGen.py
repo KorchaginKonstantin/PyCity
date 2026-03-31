@@ -8,6 +8,7 @@ with open('map.txt') as file_count:
 
 # Функции
 
+print(num)
 
 def generate_hor(per):  # Генерация Горизонтального Прохода
     file_list = []
@@ -19,6 +20,8 @@ def generate_hor(per):  # Генерация Горизонтального Пр
             for char in line:
                 if char == '1':
                     char = '0'
+                elif char == '2':
+                    char = '2'
                 if char != '\n':
                     line_list.append(char)
 
@@ -27,8 +30,9 @@ def generate_hor(per):  # Генерация Горизонтального Пр
         num_seek_hor = randint(per, len(file_list) - 1) * (len(file_list[0]) + 1)
 
         for i in range(per):
-            file.seek(num_seek_hor - (len(file_list[0])*i + i))
-            file.write(''.join(file_list[0]))
+            file.seek(num_seek_hor - ((len(file_list[0])*i) + i))
+            file.write(''.join(file_list[num_seek_hor//(num+1) - i]))
+            
 
 def generate_ver(per):  # Генерация Вертикального Прохода
     with open('map.txt', 'r+') as file:
@@ -42,7 +46,10 @@ def generate_ver(per):  # Генерация Вертикального Прох
 
             for char in line:
                 if count in per_list:
-                    char = '0'
+                    if char == '1':
+                        char = '0'
+                    elif char == '2':
+                        char = '2'
                 if char != '\n':
                     line_list.append(char)
 

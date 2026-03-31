@@ -124,8 +124,8 @@ all_sprites.add(player1)
 
 # Загрузка Уровня
 
-generate_ver(per = 7)
-generate_hor(per = 7)
+generate_ver(per = 24)
+generate_hor(per = 24)
 
 level = []
 with open('map.txt') as file:
@@ -135,6 +135,10 @@ with open('map.txt') as file:
 for y in range(len(level)):
     for x, j in enumerate(level[y]):
         if j == '1':
+            wall = Wall(x+1, y+1)
+            walls.add(wall)
+            all_sprites.add(wall)
+        elif j == '2':
             wall = Wall(x+1, y+1)
             walls.add(wall)
             all_sprites.add(wall)

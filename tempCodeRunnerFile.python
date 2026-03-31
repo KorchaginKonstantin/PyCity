@@ -1,0 +1,6 @@
+a = list(map(int, input().split()))
+b = list(map(int, input().split()))
+
+s = [b[0] - a[0], b[1] - a[1], b[2] - a[2]]
+
+print(type(a[0]), type(b[0]), type(s[0]))
