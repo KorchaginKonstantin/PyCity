@@ -26,7 +26,7 @@ def generate_hor(per):  # Генерация Горизонтального Пр
 
             file_list.append(line_list)
 
-        num_seek_hor = randint(per - 1, len(file_list) - 1) * (len(file_list[0]) + 1) # !!!! (тут рандомно ставит)
+        num_seek_hor = randint(per - 1, len(file_list) - 1) * (len(file_list[0]) + 1)
 
         for i in range(per):
             file.seek(num_seek_hor - ((len(file_list[0])*i) + i))
@@ -78,6 +78,3 @@ def ungenerate():  # Дегенерация Уровня ( ͡° ͜ʖ ͡°)
         for count_for in range(len(file_list)):
             file.seek((len(file_list[0]) + 1) * count_for)
             file.write(''.join(file_list[count_for]))
-            
-            
-

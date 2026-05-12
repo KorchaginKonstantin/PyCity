@@ -21,7 +21,7 @@ class Player1(Sprite):  # Игрок
         self.image = Surface((20, 20))
         self.image.fill(RED)
         self.rect = self.image.get_rect()
-        self.rect.center = (WIDTH / 2, HEIGHT / 2)
+        self.rect.center = (WIDTH / 2, HEIGHT - 70)
         self.direction = 'up'
 
     def update(self):
@@ -99,6 +99,10 @@ class Bullet(Sprite):  # Пуля
                 wall.kill()
                 break
 
+            # elif self.rect.colliderect(flag.rect):
+            #     ungenerate()
+            #     quit()
+
 class Wall(Sprite):  # Стена
     def __init__(self, x: float, y: float):
         Sprite.__init__(self)
@@ -107,6 +111,13 @@ class Wall(Sprite):  # Стена
         self.rect = self.image.get_rect()
         self.rect.center = (10*x-5, 10*y-5)
 
+class Flag(Sprite):
+    def __init__(self):
+        Sprite.__init__(self)
+        self.image = Surface((20, 20))
+        self.image.fill(BLUE)
+        self.rect = self.image.get_rect()
+        self.rect.center = (WIDTH / 2, HEIGHT - 10)
 
 # Данные Игры
 
@@ -115,17 +126,25 @@ mixer.init()
 screen = display.set_mode((WIDTH, HEIGHT))
 clock = time.Clock()
 
-all_sprites: Group[Player1 | Bullet | Wall] = Group()
+all_sprites: Group[Player1 | Bullet | Wall | Flag] = Group()
 bullets: Group[Bullet] = Group()
-walls: Group[Wall] = Group()
+walls: Group[Wall | Flag] = Group()
 
 player1 = Player1()
+flag = Flag()
 all_sprites.add(player1)
+all_sprites.add(flag)
 
 # Загрузка Уровня
 
-generate_ver(per = 24)
-generate_hor(per = 24)
+generate_ver(8)
+generate_hor(8)
+generate_ver(4)
+generate_hor(4)
+generate_ver(8)
+generate_hor(8)
+generate_ver(4)
+generate_hor(4)
 
 level = []
 with open('map.txt') as file:
@@ -141,12 +160,13 @@ for y in range(len(level)):
 
 # Игра
 
-countdown = 5
+countdown = 240
 countdown_timer = event.custom_type()
 
 time.set_timer(countdown_timer, 1000)
 running = True
 cooldown = time.get_ticks()  # <- Перезарядка до разницы с общим временем (первый выстрел без задержки)
+
 while running:
     clock.tick(FPS)
 
