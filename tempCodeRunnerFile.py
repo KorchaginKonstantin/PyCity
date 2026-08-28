@@ -1,3 +1,1 @@
- # elif self.rect.colliderect(flag.rect):
-            #     ungenerate()
-            #     quit()
+  cordx, cordy = self.rect.centerx, self.rect.centery - 10

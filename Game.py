@@ -11,34 +11,40 @@ BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
+flag_destruction = False
 
 # Спрайты
 
 
-class Player1(Sprite):  # Игрок
-    def __init__(self):
+class Player(Sprite):  # Игрок База
+    def __init__(self, spawnx, spawny, color, right_key, left_key, up_key, down_key):
         Sprite.__init__(self)
         self.image = Surface((20, 20))
-        self.image.fill(RED)
+        self.image.fill(color)
         self.rect = self.image.get_rect()
-        self.rect.center = (WIDTH / 2, HEIGHT - 70)
+        self.rect.center = (spawnx, spawny)
         self.direction = 'up'
+
+        self.right_key = right_key
+        self.left_key = left_key
+        self.up_key = up_key
+        self.down_key = down_key
 
     def update(self):
         self.speedx = 0
         self.speedy = 0
         key_state = key.get_pressed()
 
-        if key_state[constants.K_RIGHT]:  # <- Направления Движения
+        if key_state[self.right_key]:  # <- Направления Движения
             self.speedx = 5
             self.direction = 'right'
-        elif key_state[constants.K_LEFT]:
+        elif key_state[self.left_key]:
             self.speedx = -5
             self.direction = 'left'
-        elif key_state[constants.K_UP]:
+        elif key_state[self.up_key]:
             self.speedy = -5
             self.direction = 'up'
-        elif key_state[constants.K_DOWN]:
+        elif key_state[self.down_key]:
             self.speedy = 5
             self.direction = 'down'
 
@@ -65,6 +71,20 @@ class Player1(Sprite):  # Игрок
         all_sprites.add(bullet)
         bullets.add(bullet)
 
+class PlayerRed(Player):  # Игрок Красный
+    def __init__(self, spawnx, spawny, color, right_key, left_key, up_key, down_key):
+        super().__init__(spawnx, spawny, color, right_key, left_key, up_key, down_key)
+
+    def update(self):
+        super().update()
+        
+class PlayerBlue(Player):  # Игрок Синий
+    def __init__(self, spawnx, spawny, color, right_key, left_key, up_key, down_key):
+        super().__init__(spawnx, spawny, color, right_key, left_key, up_key, down_key)
+
+    def update(self):
+        super().update()
+
 class Bullet(Sprite):  # Пуля
     def __init__(self, x: float, y: float):
         Sprite.__init__(self)
@@ -87,21 +107,26 @@ class Bullet(Sprite):  # Пуля
             self.speedy = 0
 
     def update(self):
+        global flag_destruction
+
         self.rect.x += self.speedx
         self.rect.y += self.speedy
 
         if self.rect.bottom < 0 or self.rect.bottomleft < (0, 0) or self.rect.bottomleft > (720, 720) or self.rect.bottom > 720:  # <- Уничтожение за Краями
             self.kill()
 
+        if self.rect.colliderect(flag.rect): # <- Уничтожение Флага
+            self.kill()
+            flag_destruction = True
+
+        if self.rect.colliderect(player1.rect): # <- Столкновение с Игроком
+            print('ы') 
+
         for wall in walls:  # <- Уничтожение Стены
             if self.rect.colliderect(wall.rect):
                 self.kill()
                 wall.kill()
                 break
-
-            # elif self.rect.colliderect(flag.rect):
-            #     ungenerate()
-            #     quit()
 
 class Wall(Sprite):  # Стена
     def __init__(self, x: float, y: float):
@@ -126,25 +151,21 @@ mixer.init()
 screen = display.set_mode((WIDTH, HEIGHT))
 clock = time.Clock()
 
-all_sprites: Group[Player1 | Bullet | Wall | Flag] = Group()
+all_sprites: Group[PlayerRed | Bullet | Wall | Flag] = Group()
 bullets: Group[Bullet] = Group()
 walls: Group[Wall | Flag] = Group()
 
-player1 = Player1()
+player1 = PlayerRed(spawnx = WIDTH / 2, spawny = HEIGHT - 70, color = RED, right_key = constants.K_RIGHT, left_key = constants.K_LEFT, up_key = constants.K_UP, down_key = constants.K_DOWN)
+player2 = PlayerRed(spawnx = WIDTH / 2, spawny = HEIGHT / 2, color = BLUE, right_key = constants.K_d, left_key = constants.K_a, up_key = constants.K_w, down_key = constants.K_s)
+
 flag = Flag()
-all_sprites.add(player1)
+all_sprites.add(player1, player2)
 all_sprites.add(flag)
 
 # Загрузка Уровня
 
-generate_ver(8)
-generate_hor(8)
-generate_ver(4)
-generate_hor(4)
-generate_ver(8)
-generate_hor(8)
-generate_ver(4)
-generate_hor(4)
+generate_ver(32)
+generate_hor(32)
 
 level = []
 with open('map.txt') as file:
@@ -165,29 +186,40 @@ countdown_timer = event.custom_type()
 
 time.set_timer(countdown_timer, 1000)
 running = True
-cooldown = time.get_ticks()  # <- Перезарядка до разницы с общим временем (первый выстрел без задержки)
+
+cooldown_red = time.get_ticks()  # <- Перезарядка до разницы с общим временем (первый выстрел без задержки)
+cooldown_blue = time.get_ticks()
 
 while running:
     clock.tick(FPS)
+
+    # Выключение Игры
 
     if countdown == 0:
         ungenerate()
         running = False
 
+    if flag_destruction == True:
+        ungenerate()
+        running = False
+
     for e in event.get():
-        if e.type == constants.QUIT:
+        if e.type == constants.QUIT: # <- Тоже Выключение Игры
             ungenerate()
             running = False
         if e.type == countdown_timer:
             countdown -= 1
 
-        elif e.type == constants.KEYDOWN:
+        if e.type == constants.KEYDOWN:
             if e.key == constants.K_q and e.mod & constants.KMOD_CTRL:
                 ungenerate()
                 running = False
-            if e.key == constants.K_SPACE and time.get_ticks() >= cooldown:
-                cooldown = time.get_ticks() + 500  # <- Перезарядка с РАЗНИЦОЙ с общим временем
+            if e.key == constants.K_SPACE and time.get_ticks() >= cooldown_red:
+                cooldown_red = time.get_ticks() + 500  # <- Перезарядка с РАЗНИЦОЙ с общим временем
                 player1.shoot()
+            elif e.key == constants.K_KP_ENTER and time.get_ticks() >= cooldown_blue:
+                cooldown_blue = time.get_ticks() + 500  # <- Перезарядка с РАЗНИЦОЙ с общим временем
+                player2.shoot()
 
     display.set_caption(f'{countdown}')
     all_sprites.update()
